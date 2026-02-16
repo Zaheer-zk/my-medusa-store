@@ -1,0 +1,30 @@
+╔════════════════════════════════════════════════════════════════════════╗
+║                                                                        ║
+║   Medusa collects anonymous usage analytics                            ║
+║   to help improve Medusa for all users.                                ║
+║                                                                        ║
+║   If you'd like to opt-out, you can use `medusa telemetry --disable`   ║
+║                                                                        ║
+║                                                                        ║
+╚════════════════════════════════════════════════════════════════════════╝
+[32minfo[39m:    redisUrl not found. A fake redis instance will be used.
+[33mwarn[39m:    Pg connection failed to connect to the database. Retrying...
+{"name":"KnexTimeoutError","sql":"SELECT 1"}
+[33mwarn[39m:    Pg connection failed to connect to the database. Retrying...
+{"name":"KnexTimeoutError","sql":"SELECT 1"}
+[33mwarn[39m:    Pg connection failed to connect to the database. Retrying...
+{"name":"KnexTimeoutError","sql":"SELECT 1"}
+[33mwarn[39m:    Pg connection failed to connect to the database. Retrying...
+{"name":"KnexTimeoutError","sql":"SELECT 1"}
+KnexTimeoutError: Knex: Timeout acquiring a connection. The pool is probably full. Are you missing a .transacting(trx) call?
+    at Client_PG.acquireConnection (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/knex/lib/client.js:332:26)
+    at async Runner.ensureConnection (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/knex/lib/execution/runner.js:305:28)
+    at async Runner.run (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/knex/lib/execution/runner.js:30:19)
+    at async maxRetries.maxRetries (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/@medusajs/framework/src/database/pg-connection-loader.ts:74:7)
+    at async retryExecution (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/@medusajs/utils/src/common/retry-execution.ts:43:14)
+    at async pgConnectionLoader (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/@medusajs/framework/src/database/pg-connection-loader.ts:72:3)
+    at async initializeContainer (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/@medusajs/medusa/src/loaders/index.ts:157:5)
+    at async default_1 (/Users/zaheerkhan/Shared/P-p/local-store/my-medusa-store/node_modules/@medusajs/medusa/src/commands/develop.ts:22:21) {
+  sql: 'SELECT 1',
+  bindings: undefined
+}

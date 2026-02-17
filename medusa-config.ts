@@ -11,6 +11,8 @@ const phonepeProviderConfigured =
   Boolean(process.env.PHONEPE_CLIENT_SECRET) &&
   Boolean(process.env.PHONEPE_MERCHANT_ID)
 
+const adminDisabled = process.env.MEDUSA_DISABLE_ADMIN === "true"
+
 const paymentProviders = [
   ...(paytmProviderConfigured
     ? [
@@ -53,6 +55,9 @@ const paymentProviders = [
 ]
 
 module.exports = defineConfig({
+  admin: {
+    disable: adminDisabled,
+  },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     http: {

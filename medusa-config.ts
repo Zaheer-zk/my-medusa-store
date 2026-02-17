@@ -13,6 +13,15 @@ const phonepeProviderConfigured =
 
 const adminDisabled = process.env.MEDUSA_DISABLE_ADMIN === "true"
 
+if (
+  process.env.NODE_ENV !== "test" &&
+  (!paytmProviderConfigured || !phonepeProviderConfigured)
+) {
+  throw new Error(
+    "Paytm and PhonePe are required. Set PAYTM_* and PHONEPE_* environment variables."
+  )
+}
+
 const paymentProviders = [
   ...(paytmProviderConfigured
     ? [

@@ -63,27 +63,26 @@ export default async function seedDemoData({ container }: ExecArgs) {
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL);
   const storeModuleService = container.resolve(Modules.STORE);
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
-  const paymentProviderIds: string[] = [];
+  const countries = ["in"];
 
-  if (process.env.PAYTM_MERCHANT_ID && process.env.PAYTM_MERCHANT_KEY) {
-    paymentProviderIds.push("pp_paytm_paytm");
-  }
+  const isPaytmConfigured =
+    Boolean(process.env.PAYTM_MERCHANT_ID) &&
+    Boolean(process.env.PAYTM_MERCHANT_KEY);
+  const isPhonePeConfigured =
+    Boolean(process.env.PHONEPE_CLIENT_ID) &&
+    Boolean(process.env.PHONEPE_CLIENT_SECRET) &&
+    Boolean(process.env.PHONEPE_MERCHANT_ID);
 
-  if (
-    process.env.PHONEPE_CLIENT_ID &&
-    process.env.PHONEPE_CLIENT_SECRET &&
-    process.env.PHONEPE_MERCHANT_ID
-  ) {
-    paymentProviderIds.push("pp_phonepe_phonepe");
-  }
-
-  if (!paymentProviderIds.length) {
-    paymentProviderIds.push("pp_system_default");
-    logger.warn(
-      "No Paytm/PhonePe credentials found while seeding. Falling back to system payment provider."
+  if (!isPaytmConfigured || !isPhonePeConfigured) {
+    throw new Error(
+      "Paytm and PhonePe credentials are required. Set PAYTM_* and PHONEPE_* env vars before seeding."
     );
   }
+
+  const paymentProviderIds: string[] = [
+    "pp_paytm_paytm",
+    "pp_phonepe_phonepe",
+  ];
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();
@@ -112,11 +111,8 @@ export default async function seedDemoData({ container }: ExecArgs) {
       store_id: store.id,
       supported_currencies: [
         {
-          currency_code: "eur",
+          currency_code: "inr",
           is_default: true,
-        },
-        {
-          currency_code: "usd",
         },
       ],
     },
@@ -135,8 +131,8 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       regions: [
         {
-          name: "Europe",
-          currency_code: "eur",
+          name: "India",
+          currency_code: "inr",
           countries,
           payment_providers: paymentProviderIds,
         },
@@ -162,10 +158,10 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "India Warehouse",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: "Mumbai",
+            country_code: "IN",
             address_1: "",
           },
         },
@@ -214,38 +210,14 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "India Warehouse delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
+        name: "India",
         geo_zones: [
           {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
+            country_code: "in",
             type: "country",
           },
         ],
@@ -277,16 +249,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "inr",
+            amount: 75,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 75,
           },
         ],
         rules: [
@@ -315,16 +283,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "inr",
+            amount: 150,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 150,
           },
         ],
         rules: [
@@ -466,11 +430,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -484,11 +444,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -502,11 +458,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -520,11 +472,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -538,11 +486,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -556,11 +500,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -574,11 +514,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -592,11 +528,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -642,11 +574,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -659,11 +587,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -676,11 +600,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -693,11 +613,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -743,11 +659,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -760,11 +672,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -777,11 +685,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -794,11 +698,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -844,11 +744,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -861,11 +757,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -878,11 +770,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },
@@ -895,11 +783,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
               prices: [
                 {
                   amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
+                  currency_code: "inr",
                 },
               ],
             },

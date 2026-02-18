@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build": "medusa build",
-    "build:render": "NODE_OPTIONS=--max-old-space-size=384 medusa build",
+    "build:render": "medusa build",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "start": "medusa start",
     "start:render": "NODE_OPTIONS=--max-old-space-size=384 medusa start -H 0.0.0.0 -p ${PORT:-9000}",

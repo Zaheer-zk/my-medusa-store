@@ -72,17 +72,30 @@ export default async function seedDemoData({ container }: ExecArgs) {
     Boolean(process.env.PHONEPE_CLIENT_ID) &&
     Boolean(process.env.PHONEPE_CLIENT_SECRET) &&
     Boolean(process.env.PHONEPE_MERCHANT_ID);
+  const paymentProviderIds: string[] = [];
 
-  if (!isPaytmConfigured || !isPhonePeConfigured) {
-    throw new Error(
-      "Paytm and PhonePe credentials are required. Set PAYTM_* and PHONEPE_* env vars before seeding."
+  if (isPaytmConfigured) {
+    paymentProviderIds.push("pp_paytm_paytm");
+  } else {
+    logger.warn(
+      "Paytm credentials are missing. Seeding will skip pp_paytm_paytm."
     );
   }
 
-  const paymentProviderIds: string[] = [
-    "pp_paytm_paytm",
-    "pp_phonepe_phonepe",
-  ];
+  if (isPhonePeConfigured) {
+    paymentProviderIds.push("pp_phonepe_phonepe");
+  } else {
+    logger.warn(
+      "PhonePe credentials are missing. Seeding will skip pp_phonepe_phonepe."
+    );
+  }
+
+  if (!paymentProviderIds.length) {
+    logger.warn(
+      "No gateway credentials found. Falling back to pp_system_default for region payment providers."
+    );
+    paymentProviderIds.push("pp_system_default");
+  }
 
   logger.info("Seeding store data...");
   const [store] = await storeModuleService.listStores();

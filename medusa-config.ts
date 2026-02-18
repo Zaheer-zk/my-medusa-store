@@ -1,25 +1,51 @@
 import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+const nodeEnv = process.env.NODE_ENV || "development"
 
-const paytmProviderConfigured =
-  Boolean(process.env.PAYTM_MERCHANT_ID) &&
-  Boolean(process.env.PAYTM_MERCHANT_KEY)
+const paytmMissingVars = [
+  "PAYTM_MERCHANT_ID",
+  "PAYTM_MERCHANT_KEY",
+].filter((key) => !process.env[key])
+const phonepeMissingVars = [
+  "PHONEPE_CLIENT_ID",
+  "PHONEPE_CLIENT_SECRET",
+  "PHONEPE_MERCHANT_ID",
+].filter((key) => !process.env[key])
 
-const phonepeProviderConfigured =
-  Boolean(process.env.PHONEPE_CLIENT_ID) &&
-  Boolean(process.env.PHONEPE_CLIENT_SECRET) &&
-  Boolean(process.env.PHONEPE_MERCHANT_ID)
+const paytmProviderConfigured = paytmMissingVars.length === 0
+const phonepeProviderConfigured = phonepeMissingVars.length === 0
 
 const adminDisabled = process.env.MEDUSA_DISABLE_ADMIN === "true"
+const requirePaymentProviders = nodeEnv === "production"
 
 if (
-  process.env.NODE_ENV !== "test" &&
+  requirePaymentProviders &&
   (!paytmProviderConfigured || !phonepeProviderConfigured)
 ) {
   throw new Error(
-    "Paytm and PhonePe are required. Set PAYTM_* and PHONEPE_* environment variables."
+    "Paytm and PhonePe are required in production. Set PAYTM_* and PHONEPE_* environment variables."
   )
+}
+
+if (nodeEnv !== "test") {
+  if (!paytmProviderConfigured) {
+    console.warn(
+      `[config] Paytm disabled. Missing vars: ${paytmMissingVars.join(", ")}`
+    )
+  }
+
+  if (!phonepeProviderConfigured) {
+    console.warn(
+      `[config] PhonePe disabled. Missing vars: ${phonepeMissingVars.join(", ")}`
+    )
+  }
+
+  if (!paytmProviderConfigured && !phonepeProviderConfigured) {
+    console.warn(
+      "[config] No payment gateways are enabled. Configure PAYTM_* and/or PHONEPE_* vars."
+    )
+  }
 }
 
 const paymentProviders = [

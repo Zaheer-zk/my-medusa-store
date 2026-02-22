@@ -18,7 +18,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   if (!actor || !isSuperAdmin(actor)) {
     res.status(403).json({
-      message: "Only super admin can approve admin users.",
+      message: "Only super admin can reject admin users.",
     })
     return
   }
@@ -31,24 +31,29 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return
   }
 
-  const userModuleService = req.scope.resolve<any>(Modules.USER)
   const metadata = toMetadataRecord(user.metadata)
+
+  if (metadata.is_super_admin === true) {
+    res.status(400).json({
+      message: "Super admin account cannot be rejected.",
+    })
+    return
+  }
+
+  const userModuleService = req.scope.resolve<any>(Modules.USER)
   const updatedUser = await userModuleService.updateUsers({
     id: user.id,
     metadata: {
       ...metadata,
-      is_admin_approved: true,
-      is_super_admin: metadata.is_super_admin === true,
-      admin_approval_status: "approved",
-      admin_approved_by: actor.id,
-      admin_approved_at: new Date().toISOString(),
-      admin_rejected_by: null,
-      admin_rejected_at: null,
+      is_admin_approved: false,
+      admin_approval_status: "rejected",
+      admin_rejected_by: actor.id,
+      admin_rejected_at: new Date().toISOString(),
     },
   })
 
   res.json({
-    message: "Admin user approved.",
+    message: "Admin user rejected.",
     user: {
       id: updatedUser.id,
       email: updatedUser.email,

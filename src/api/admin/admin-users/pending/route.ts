@@ -1,7 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { Modules } from "@medusajs/framework/utils"
 import {
-  isApprovedAdmin,
+  getAdminApprovalStatus,
   isSuperAdmin,
   retrieveUserById,
 } from "../../../utils/admin-user-access"
@@ -25,7 +25,9 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   const userModuleService = req.scope.resolve<any>(Modules.USER)
   const users = await userModuleService.listUsers({}, { take: 500 })
-  const pendingUsers = users.filter((user: any) => !isSuperAdmin(user) && !isApprovedAdmin(user))
+  const pendingUsers = users.filter(
+    (user: any) => getAdminApprovalStatus(user) === "pending"
+  )
 
   res.json({
     count: pendingUsers.length,
